@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.List;
 
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -31,6 +32,7 @@ public class ProductSellDailyDaoTest {
 	}
 	
 	@Test
+	@Ignore
 	public void testBQueryProductSellDaily() throws Exception{
 		ProductSellDaily productSellDaily = new ProductSellDaily();
 		Shop shop = new Shop();

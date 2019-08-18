@@ -81,4 +81,10 @@ public class ShopAdminController {
 		// 转发到权限管理页面
 		return "shop/operationfail";
 	}
+	
+	@RequestMapping(value = "/productbuycheck", method = RequestMethod.GET)
+	public String productbuycheck() {
+		// 转发到消费记录页面
+		return "shop/productbuycheck";
+	}
 }

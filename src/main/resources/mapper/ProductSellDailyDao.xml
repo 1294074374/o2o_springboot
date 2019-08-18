@@ -58,7 +58,7 @@
 			SELECT
 			product_id,shop_id,create_time,count(product_id) AS total FROM
 			tb_user_product_map
-			WHERE date_format(create_time.'%Y-%m-%d') = date_sub(curdate(),interval 1 day)
+			WHERE date_format(create_time,'%Y-%m-%d') = date_sub(curdate(),interval 1 day)
 			GROUP BY product_id
 		)
 	</insert>
