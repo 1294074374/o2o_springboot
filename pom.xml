@@ -51,12 +51,15 @@
 			<artifactId>mysql-connector-java</artifactId>
 		</dependency>
 
+
 		<dependency>
 			<groupId>c3p0</groupId>
 			<artifactId>c3p0</artifactId>
 			<version>0.9.1.2</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/com.mchange/c3p0 <dependency> <groupId>com.mchange</groupId> 
+			<artifactId>c3p0</artifactId> <version>0.9.5.4</version> </dependency> -->
 		<!-- 图片处理 -->
 		<!-- https://mvnrepository.com/artifact/net.coobird/thumbnailator -->
 		<dependency>
@@ -68,7 +71,7 @@
 		<!-- json 解析 -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>			
+			<artifactId>jackson-databind</artifactId>
 		</dependency>
 
 		<!-- 验证码 -->
@@ -88,7 +91,7 @@
 		<!-- redis客户端:jedis -->
 		<dependency>
 			<groupId>redis.clients</groupId>
-			<artifactId>jedis</artifactId>			
+			<artifactId>jedis</artifactId>
 		</dependency>
 		<!-- <dependency> <groupId>org.slf4j</groupId> <artifactId>slf4j-api</artifactId> 
 			<version>1.5.6</version> <type>jar</type> </dependency> <dependency> <groupId>org.slf4j</groupId> 
@@ -99,14 +102,24 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-		
+
 		<!-- 生成二维码 -->
 		<dependency>
 			<groupId>com.google.zxing</groupId>
 			<artifactId>javase</artifactId>
 			<version>3.3.0</version>
 		</dependency>
-		
+
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>org.mybatis.spring.boot</groupId>
 			<artifactId>mybatis-spring-boot-starter</artifactId>

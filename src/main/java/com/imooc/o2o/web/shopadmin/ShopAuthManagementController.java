@@ -1,8 +1,11 @@
 package com.imooc.o2o.web.shopadmin;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,13 +23,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.imooc.o2o.dto.ShopAuthMapExecution;
+import com.imooc.o2o.dto.UserAccessToken;
+import com.imooc.o2o.dto.WechatInfo;
+import com.imooc.o2o.entity.PersonInfo;
 import com.imooc.o2o.entity.Shop;
 import com.imooc.o2o.entity.ShopAuthMap;
+import com.imooc.o2o.entity.WechatAuth;
 import com.imooc.o2o.enums.ShopAuthMapStateEnum;
+import com.imooc.o2o.service.PersonInfoService;
 import com.imooc.o2o.service.ShopAuthMapService;
+import com.imooc.o2o.service.WechatAuthService;
 import com.imooc.o2o.util.CodeUtil;
 import com.imooc.o2o.util.HttpServletRequestUtil;
 import com.imooc.o2o.util.ShortNetAddressUtil;
+import com.imooc.o2o.util.wechat.WechatUtil;
 
 @Controller
 @RequestMapping("/shop")
@@ -34,6 +44,12 @@ public class ShopAuthManagementController {
 
 	@Autowired
 	private ShopAuthMapService shopAuthMapService;
+
+	@Autowired
+	private WechatAuthService wechatAuthService;
+
+	@Autowired
+	private PersonInfoService personInfoService;
 
 	@RequestMapping(value = "/listshopauthmapsbyshop", method = RequestMethod.GET)
 	@ResponseBody
@@ -228,7 +244,7 @@ public class ShopAuthManagementController {
 			long timpStamp = System.currentTimeMillis();
 			String content = "{aaashopIdaaa" + shop.getShopId() + "aaacreateTimeaaa" + timpStamp + "}";
 			try {
-				//凭借URL
+				// 凭借URL
 				String longUrl = urlPrefix + authUrl + urlMiddle + URLEncoder.encode(content, "UTF-8") + urlSuffix;
 				String shopUrl = ShortNetAddressUtil.getShortURL(longUrl);
 				// 将二维码以图片流的形式输出到前端
@@ -238,5 +254,113 @@ public class ShopAuthManagementController {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	/**
+	 * 根据微信回传的参数添加店铺的授权信息
+	 * 
+	 * @param shopAuthMapStr
+	 * @param request
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 */
+	@RequestMapping(value = "/addshopauthmap", method = RequestMethod.POST)
+	@ResponseBody
+	private String addShopAuthMap(String shopAuthMapStr, HttpServletRequest request)
+			throws UnsupportedEncodingException {
+		// 从request里面获取微信用户的信息
+		WechatAuth auth = getEmployeeInfo(request);
+		if (auth != null) {
+			// 根据userId获取用户信息
+			PersonInfo user = personInfoService.getPersonInfoById(auth.getPersionInfo().getUserId());
+			// 根据将用户信息添加到user里
+			request.getSession().setAttribute("user", user);
+			// 解析微信回传过来的自定义参数state 由于之前进行了编码，这里需要解码
+			String qrCodeinfo = new String(
+					URLDecoder.decode(HttpServletRequestUtil.getString(request, "state"), "UTF-8"));
+			ObjectMapper mapper = new ObjectMapper();
+			WechatInfo wechatInfo = null;
+			try {
+				// 将解码后的内容用aaa去掉替换之前生成二维啊的时候加入的aaa前缀，转换成WechatInfo实体类
+				wechatInfo = mapper.readValue(qrCodeinfo.replace("aaa", "\""), WechatInfo.class);
+			} catch (Exception e) {
+				return "shop/operationfail";
+			}
+			// 校验二维码是否过期
+			if (!checkQRCodeInfo(wechatInfo)) {
+				return "shop/operationfail";
+			}
+			// 去重校验
+			// 获取该店铺下所有的授权信息
+			ShopAuthMapExecution allMapList = shopAuthMapService.listShopAuthMapByShopId(wechatInfo.getShopId(), 1,
+					999);
+
+			List<ShopAuthMap> shopAuthList = allMapList.getShopAuthMapList();
+			for (ShopAuthMap sm : shopAuthList) {
+				if (sm.getEmployee().getUserId() == user.getUserId())
+					return "shop/operationfail";
+			}
+			try {
+				// 根据获取到的内容，添加到微信授权信息
+				ShopAuthMap shopAuthMap = new ShopAuthMap();
+				Shop shop = new Shop();
+				shop.setShopId(wechatInfo.getShopId());
+				shopAuthMap.setShop(shop);
+				shopAuthMap.setEmployee(user);
+				shopAuthMap.setTitle("员工");
+				shopAuthMap.setTitleFlag(1);
+				ShopAuthMapExecution se = shopAuthMapService.addShopAuthMap(shopAuthMap);
+				if (se.getState() == ShopAuthMapStateEnum.SUCCESS.getState()) {
+					return "shop/operationsuccess";
+				} else {
+					return "shop/operationsuccess";
+				}
+			} catch (RuntimeException e) {
+				return "shop/operationfail";
+			}
+		}
+		return "shop/operationfail";
+	}
+
+	/**
+	 * 根据二维码携带的creatTime 判断是否超过了10分钟
+	 * 
+	 * @param wechatInfo
+	 * @return
+	 */
+	private boolean checkQRCodeInfo(WechatInfo wechatInfo) {
+		if (wechatInfo != null && wechatInfo.getShopId() != null && wechatInfo.getCreateTime() != null) {
+			long nowTime = System.currentTimeMillis();
+			if ((nowTime - wechatInfo.getCreateTime() <= 600000)) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * 根据微信回传的code获取用户信息
+	 * 
+	 * @param request
+	 * @return
+	 */
+	private WechatAuth getEmployeeInfo(HttpServletRequest request) {
+		String code = request.getParameter("code");
+		WechatAuth auth = null;
+		if (null != code) {
+			UserAccessToken token;
+			try {
+				token = WechatUtil.getUserAccessToken(code);
+				String openId = token.getOpenId();
+				request.getSession().setAttribute("openId", openId);
+				auth = wechatAuthService.getWechatAuthByOpenId(openId);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return auth;
 	}
 }

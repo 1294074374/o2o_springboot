@@ -51,21 +51,34 @@ public class ShopAdminController {
 		// 转发到商品添加/编辑页面
 		return "shop/productoperation";
 	}
-	
+
 	@RequestMapping(value = "/productmanagement")
 	public String productManagement() {
 		// 转发到商品添加/编辑页面
 		return "shop/productmanage";
 	}
-	
+
 	@RequestMapping(value = "/shopauthmanage")
 	public String shopauthmanage() {
 		// 转发到权限管理页面
 		return "shop/shopauthmanage";
 	}
+
 	@RequestMapping(value = "/shopauthedit")
 	public String shopauthedit() {
 		// 转发到权限管理页面
 		return "shop/shopauthedit";
+	}
+
+	@RequestMapping(value = "/operationsuccess", method = RequestMethod.GET)
+	public String operationsuccess() {
+		// 转发到验证成功页面
+		return "shop/operationsuccess";
+	}
+
+	@RequestMapping(value = "/operationfail", method = RequestMethod.GET)
+	public String operationfail() {
+		// 转发到权限管理页面
+		return "shop/operationfail";
 	}
 }

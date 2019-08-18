@@ -7,10 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.imooc.o2o.dao.ShopAuthMapDao;
 import com.imooc.o2o.dao.ShopDao;
 import com.imooc.o2o.dto.ImageHolder;
 import com.imooc.o2o.dto.ShopExecution;
 import com.imooc.o2o.entity.Shop;
+import com.imooc.o2o.entity.ShopAuthMap;
 import com.imooc.o2o.enums.ShopStateEnum;
 import com.imooc.o2o.exception.ShopOperationException;
 import com.imooc.o2o.service.ShopService;
@@ -22,6 +24,9 @@ import com.imooc.o2o.util.PathUtil;
 public class ShopServiceImpl implements ShopService {
 	@Autowired
 	private ShopDao shopDao;
+
+	@Autowired
+	private ShopAuthMapDao shopAuthMapDao;
 
 	@Override
 	public ShopExecution getShopList(Shop shopCondition, int pageIndex, int pageSize) {
@@ -62,7 +67,7 @@ public class ShopServiceImpl implements ShopService {
 				if (thumbnail.getImage() != null) {
 					// 存储图片
 					try {
-						addShopImg(shop,thumbnail);
+						addShopImg(shop, thumbnail);
 					} catch (Exception e) {
 						throw new RuntimeException("addShopImg error: " + e.getMessage());
 					}
@@ -70,6 +75,23 @@ public class ShopServiceImpl implements ShopService {
 					effectedNum = shopDao.updateShop(shop);
 					if (effectedNum <= 0) {
 						throw new ShopOperationException("更新图片地址失败");
+					}
+					// 执行添加shopAuthMap
+					ShopAuthMap shopAuthMap = new ShopAuthMap();
+					shopAuthMap.setEmployee(shop.getOwner());
+					shopAuthMap.setShop(shop);
+					shopAuthMap.setTitle("店家");
+					shopAuthMap.setTitleFlag(0);
+					shopAuthMap.setCreateTime(new Date());
+					shopAuthMap.setLastEditTime(new Date());
+					shopAuthMap.setEnableStatus(1);
+					try {
+						effectedNum = shopAuthMapDao.insertShopAuthMap(shopAuthMap);
+						if (effectedNum <= 0) {
+							throw new ShopOperationException("授权创建失败");
+						}
+					} catch (Exception e) {
+						throw new ShopOperationException("insertShopAuthMap error: " + e.getMessage());
 					}
 				}
 			}
@@ -102,7 +124,8 @@ public class ShopServiceImpl implements ShopService {
 		} else {
 			// 1.判断是否需要处理图片
 			try {
-				if (thumbnail.getImage() != null && thumbnail.getImageName() != null && !"".equals(thumbnail.getImageName())) {
+				if (thumbnail.getImage() != null && thumbnail.getImageName() != null
+						&& !"".equals(thumbnail.getImageName())) {
 					// 获取图片的路径
 					Shop tempShop = shopDao.queryByShopId(shop.getShopId());
 					if (tempShop.getShopImg() != null) {
