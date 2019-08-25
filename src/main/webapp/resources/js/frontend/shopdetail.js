@@ -124,5 +124,8 @@ $(function() {
 	$('#me').click(function() {
 		$.openPanel('#panel-left-demo');
 	});
+	
+	$('#exchangelist').attr('href','/o2o/frontend/awardlist?shopId='+shopId);
+	
 	$.init();
 });

@@ -23,6 +23,7 @@ public class ProductSellDailyServiceImpl implements ProductSellDailyService {
 		log.info("Quartz Runnering!");
 		productSellDailyDao.insertProductSellDaily();
 		//System.out.println("Quartz运行了");
+		productSellDailyDao.insertDefaultProductSellDaily();
 
 	}
 

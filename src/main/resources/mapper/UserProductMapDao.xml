@@ -54,7 +54,7 @@
 			and
 			upm.product_id =p.product_id
 			and
-			up,.operator_id = operator.user_id
+			upm.operator_id = operator.user_id
 			<if test="userProductCondition.user!=null
 				and userProductCondition.user.userId!=null">
 				and upm.user_id = #{userProductCondition.user.userId}
@@ -95,7 +95,7 @@
 			and
 			upm.product_id =p.product_id
 			and
-			up,.operator_id = operator.user_id
+			upm.operator_id = operator.user_id
 			<if test="userProductCondition.user!=null
 				and userProductCondition.user.userId!=null">
 				and upm.user_id = #{userProductCondition.user.userId}

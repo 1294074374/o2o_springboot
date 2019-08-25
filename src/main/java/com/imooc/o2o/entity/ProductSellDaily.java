@@ -4,6 +4,8 @@ import java.util.Date;
 
 //顾客消费的商品映射
 public class ProductSellDaily {
+	//主键
+	private Long productSellDailyId;
 	// 某天的销量
 	private Date createTime;
 	// 销量
@@ -12,6 +14,14 @@ public class ProductSellDaily {
 	private Product product;
 	// 店铺信息实体类
 	private Shop shop;
+
+	public Long getProductSellDailyId() {
+		return productSellDailyId;
+	}
+
+	public void setProductSellDailyId(Long productSellDailyId) {
+		this.productSellDailyId = productSellDailyId;
+	}
 
 	public Date getCreateTime() {
 		return createTime;

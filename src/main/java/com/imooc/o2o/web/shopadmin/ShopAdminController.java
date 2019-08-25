@@ -87,4 +87,10 @@ public class ShopAdminController {
 		// 转发到消费记录页面
 		return "shop/productbuycheck";
 	}
+	
+	@RequestMapping(value = "/usershopcheck", method = RequestMethod.GET)
+	public String usershopcheck() {
+		// 转发到消费记录页面
+		return "shop/usershopcheck";
+	}
 }

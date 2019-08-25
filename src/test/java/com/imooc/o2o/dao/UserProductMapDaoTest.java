@@ -26,6 +26,11 @@ public class UserProductMapDaoTest {
 	@Autowired
 	private UserProductMapDao userProductMapDao;
 
+	/**
+	 * 测试添加功能
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	@Ignore
 	public void testAInsertUserProductMap() throws Exception {
@@ -56,21 +61,24 @@ public class UserProductMapDaoTest {
 	}
 
 	@Test
-	@Ignore
-	public void testBQueryUserProductMapList() throws Exception {
+	public void testBQueryUserProductMap() throws Exception {
 		UserProductMap userProductMap = new UserProductMap();
-
-		List<UserProductMap> userProductMapList = userProductMapDao.queryUserProductMapList(userProductMap, 0, 3);
+		PersonInfo customer  = new PersonInfo();
+		//按名字模糊查询
+		customer.setName("测试");
+		userProductMap.setUser(customer);
+		List<UserProductMap> userProductMapList = userProductMapDao.queryUserProductMapList(userProductMap, 0, 2);
 		assertEquals(2, userProductMapList.size());
+		
 		int count = userProductMapDao.queryUserProductMapCount(userProductMap);
-		assertEquals(2, count);
+		assertEquals(3, count);
 		userProductMapList = userProductMapDao.queryUserProductMapList(userProductMap, 0, 3);
-		assertEquals(2, userProductMapList.size());
+		assertEquals(3, userProductMapList.size());
 		count = userProductMapDao.queryUserProductMapCount(userProductMap);
-		assertEquals(2, count);
+		assertEquals(3, count);
 		userProductMapList = userProductMapDao.queryUserProductMapList(userProductMap, 0, 3);
-		assertEquals(1, userProductMapList.size());
+		assertEquals(3, userProductMapList.size());
 		count = userProductMapDao.queryUserProductMapCount(userProductMap);
-		assertEquals(1, count);
+		assertEquals(3, count);
 	}
 }

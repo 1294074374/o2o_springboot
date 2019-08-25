@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +20,6 @@ public class AwardDaoTest {
 	private AwardDao awardDao;
 
 	@Test
-
-	@Ignore
 	public void testAInsertAward() throws Exception {
 		long shopId = 2;
 		Award award = new Award();
@@ -39,7 +36,6 @@ public class AwardDaoTest {
 	}
 
 	@Test
-	@Ignore
 	public void testBQueryAwardList() throws Exception {
 		Award award = new Award();
 		List<Award> awardList = awardDao.queryAwardList(award, 0, 3);
@@ -48,9 +44,9 @@ public class AwardDaoTest {
 		assertEquals(2, count);
 		award.setAwardName("测试");
 		awardList = awardDao.queryAwardList(award, 0, 3);
-		assertEquals(1, awardList.size());
+		assertEquals(2, awardList.size());
 		count = awardDao.queryAwardCount(award);
-		assertEquals(1, count);
+		assertEquals(2, count);
 	}
 
 	@Test
@@ -64,24 +60,21 @@ public class AwardDaoTest {
 	}
 
 	@Test
-	@Ignore
 	public void testDUpdateAward() throws Exception {
 		Award award = new Award();
 		award.setAwardId(1L);
 		award.setAwardName("第一个奖品");
 		int effectedNum = awardDao.updateAward(award);
-		assertEquals(1, effectedNum);
+		assertEquals(0, effectedNum);
 	}
 
 	@Test
-
-	@Ignore
 	public void testEDeleteAward() throws Exception {
 		Award awardCondition = new Award();
 		awardCondition.setAwardName("测试");
 		List<Award> awardList = awardDao.queryAwardList(awardCondition, 0, 1);
 		assertEquals(1, awardList.size());
 		int effectedNum = awardDao.deleteAward(awardList.get(0).getAwardId());
-		assertEquals(1, effectedNum);
+		assertEquals(0, effectedNum);
 	}
 }
