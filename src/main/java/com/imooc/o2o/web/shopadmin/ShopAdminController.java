@@ -93,4 +93,16 @@ public class ShopAdminController {
 		// 转发到消费记录页面
 		return "shop/usershopcheck";
 	}
+	
+	@RequestMapping(value = "/awarddelivercheck", method = RequestMethod.GET)
+	public String awarddelivercheck() {
+		// 转发到消费记录页面
+		return "shop/awarddelivercheck";
+	}
+	
+	@RequestMapping(value = "/awardmanage", method = RequestMethod.GET)
+	public String awardmanage() {
+		// 转发到消费记录页面
+		return "shop/awardmanage";
+	}
 }

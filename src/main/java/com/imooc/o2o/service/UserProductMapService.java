@@ -5,7 +5,7 @@ import com.imooc.o2o.entity.UserProductMap;
 
 public interface UserProductMapService {
 	/**
-	 * 
+	 * 通过传入的查询条件 查找到列表
 	 * @param shopId
 	 * @param pageIndex
 	 * @param pageSize

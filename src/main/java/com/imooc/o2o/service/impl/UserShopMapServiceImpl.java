@@ -34,4 +34,10 @@ public class UserShopMapServiceImpl implements UserShopMapService {
 		}
 
 	}
+
+	@Override
+	public UserShopMap getUserShopMap(long userId, long shopId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
